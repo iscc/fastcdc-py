@@ -1,7 +1,8 @@
-from io import BytesIO
-from mmap import mmap, ACCESS_READ
+import os
 import pytest
 from fastcdc.lib import *
+
+TEST_FILE = os.path.join(os.path.dirname(__file__), "SekienAkashita.jpg")
 
 
 def test_logarithm2():
@@ -87,11 +88,8 @@ def test_all_zeros():
 
 
 def test_sekien_16k_chunks():
-    with open("SekienAkashita.jpg", "rb") as f:
-        mm = mmap(f.fileno(), 0, access=ACCESS_READ)
-        chunker = FastCDC.new(mm, 8192, 16384, 32768)
-        results = [c for c in chunker]
-        mm.close()
+    chunker = FastCDC.new(TEST_FILE, 8192, 16384, 32768)
+    results = [c for c in chunker]
     assert len(results) == 6
     assert results[0].offset == 0
     assert results[0].length == 22366
@@ -108,7 +106,7 @@ def test_sekien_16k_chunks():
 
 
 def test_sekien_32k_chunks():
-    chunker = FastCDC.new("SekienAkashita.jpg", 16384, 32768, 65536)
+    chunker = FastCDC.new(TEST_FILE, 16384, 32768, 65536)
     results = [c for c in chunker]
     assert len(results) == 3
     assert results[0].offset == 0
@@ -120,44 +118,7 @@ def test_sekien_32k_chunks():
 
 
 def test_sekien_64k_chunks():
-    with open("SekienAkashita.jpg", "rb") as f:
-        mm = mmap(f.fileno(), 0, access=ACCESS_READ)
-        chunker = FastCDC.new(mm, 32768, 65536, 131_072)
-        results = [c for c in chunker]
-        mm.close()
-    assert len(results) == 2
-    assert results[0].offset == 0
-    assert results[0].length == 32857
-    assert results[1].offset == 32857
-    assert results[1].length == 76609
-
-
-def test_sekien_64k_chunks_bytes():
-    with open("SekienAkashita.jpg", "rb") as f:
-        data = f.read()
-    chunker = FastCDC.new(data, 32768, 65536, 131_072)
-    results = [c for c in chunker]
-    assert len(results) == 2
-    assert results[0].offset == 0
-    assert results[0].length == 32857
-    assert results[1].offset == 32857
-    assert results[1].length == 76609
-
-
-def test_sekien_64k_chunks_bytearray():
-    with open("SekienAkashita.jpg", "rb") as f:
-        data = bytearray(f.read())
-    chunker = FastCDC.new(data, 32768, 65536, 131_072)
-    results = [c for c in chunker]
-    assert len(results) == 2
-    assert results[0].offset == 0
-    assert results[0].length == 32857
-    assert results[1].offset == 32857
-    assert results[1].length == 76609
-
-
-def test_sekien_64k_chunks_filepath():
-    chunker = FastCDC.new("SekienAkashita.jpg", 32768, 65536, 131_072)
+    chunker = FastCDC.new(TEST_FILE, 32768, 65536, 131_072)
     results = [c for c in chunker]
     assert len(results) == 2
     assert results[0].offset == 0
