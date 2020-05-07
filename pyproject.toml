@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "fastcdc"
+version = "1.0.0"
+description = "FastCDC (content defined chunking) in pure Python."
+authors = ["Titusz Pan <tp@py7.de>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/iscc/fastcdc-py"
+keywords = ["cdc", "chunking"]
+
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Unix",
+    "Operating System :: POSIX",
+    "Operating System :: Microsoft :: Windows",
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    "Topic :: Multimedia",
+    "Topic :: System :: Archiving",
+    "Topic :: Utilities",
+    "Topic :: Software Development",
+]
+
+[tool.poetry.scripts]
+fastcdc = 'fastcdc.cli:cli'
+
+[tool.poetry.dependencies]
+python = "^3.6"
+click = "^7.1.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5"
+black = "^19.10b0"
+
+[build-system]
+requires = ["poetry>=1.0", "wheel"]
+build-backend = "poetry.masonry.api"
