@@ -91,3 +91,11 @@ calculate a hash digest of the chunks.
     + An alternative implementation of FastCDC to the one in this crate.
 * [jrobhoward/quickcdc](https://github.com/jrobhoward/quickcdc)
     + Similar but slightly earlier algorithm by some of the same researchers.
+
+## Change Log
+
+## [1.0.0] - 2019-05-07
+
+### Added
+- Initial release (port of [nlfiedler/fastcdc-rs](https://github.com/nlfiedler/fastcdc-rs)). 
+
