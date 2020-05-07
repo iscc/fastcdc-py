@@ -1,5 +1,6 @@
 # FastCDC
 
+![Tests](https://github.com/titusz/fastcdc-py/workflows/Tests/badge.svg)
 [![Version](https://img.shields.io/pypi/v/fastcdc.svg)](https://pypi.python.org/pypi/fastcdc/)
 [![Downloads](https://pepy.tech/badge/fastcdc)](https://pepy.tech/project/fastcdc)
 
