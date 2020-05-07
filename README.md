@@ -95,7 +95,7 @@ calculate a hash digest of the chunks.
 
 ## Change Log
 
-## [1.0.0] - 2019-05-07
+## [1.0.0] - 2020-05-07
 
 ### Added
 - Initial release (port of [nlfiedler/fastcdc-rs](https://github.com/nlfiedler/fastcdc-rs)). 
