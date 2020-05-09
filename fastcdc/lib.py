@@ -16,7 +16,7 @@ from fastcdc import original
 
 @dataclass
 class Chunk:
-    """Represents a (variable sized) chunk of a fiile."""
+    """Represents a (variable sized) chunk of a file."""
 
     offset: int
     length: int
