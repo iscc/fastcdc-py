@@ -125,6 +125,14 @@ calculate a hash digest of the chunks.
 
 ## Change Log
 
+## [1.1.0] - 2020-05-09
+
+### Added
+- high-level API
+- support for streams
+- upport for custom hash functions
+
+
 ## [1.0.0] - 2020-05-07
 
 ### Added
