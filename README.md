@@ -27,21 +27,51 @@ which demonstrates reading files of arbitrary size into a memory-mapped buffer
 and passing them through the chunker (and computing the SHA256 hash digest of
 each chunk).
 
+### Calculate chunks with default settings:
 ```shell
-$ fastcdc -s 32768 tests/SekienAkashita.jpg
+$ fastcdc tests/SekienAkashita.jpg
+hash=103159aa68bb1ea98f64248c647b8fe9a303365d80cb63974a73bba8bc3167d7 offset=0 size=22366
+hash=3f2b58dc77982e763e75db76c4205aaab4e18ff8929e298ca5c58500fee5530d offset=22366 size=10491
+hash=fcfb2f49ccb2640887a74fad1fb8a32368b5461a9dccc28f29ddb896b489b913 offset=32857 size=14094
+hash=bd1198535cdb87c5571378db08b6e886daf810873f5d77000a54795409464138 offset=46951 size=18696
+hash=d6347a2e5bf586d42f2d80559d4f4a2bf160dce8f77eede023ad2314856f3086 offset=65647 size=43819
+```
+
+### Customize min-size, avg-size, max-size, and hash function
+```shell
+$ fastcdc -mi 16384 -s 32768 -ma 65536 -hf sha256 tests/SekienAkashita.jpg
 hash=5a80871bad4588c7278d39707fe68b8b174b1aa54c59169d3c2c72f1e16ef46d offset=0 size=32857
 hash=13f6a4c6d42df2b76c138c13e86e1379c203445055c2b5f043a5f6c291fa520d offset=32857 size=16408
 hash=0fe7305ba21a5a5ca9f89962c5a6f3e29cd3e2b36f00e565858e0012e5f8df36 offset=49265 size=60201
 ```
 
+### Show help
+
+```shell
+$ fastcdc -h 
+Usage: fastcdc [OPTIONS] FILE
+
+  Splits a (large) file into variable sized chunks and computes hashes.
+
+Options:
+  --version                  Show the version and exit.
+  -s, --size INTEGER         The desired average size of the chunks.
+                             [default: 16384]
+
+  -mi, --min-size INTEGER    Minimum chunk size (default size/4)
+  -ma, --max-size INTEGER    Maximum chunk size (default size*8)
+  -hf, --hash-function TEXT  [default: sha256]
+  --help                     Show this message and exit.
+```
+
+### Use from your python code
 The  tests also have some short examples of using the chunker, of which this
 code snippet is an example:
 
 ```python
-from fastcdc import FastCDC
+from fastcdc import chunkify
 
-chunker = FastCDC.new("SekienAkashita.jpg", 16384, 32768, 65536)
-results = [c for c in chunker]
+results = list(chunkify("tests/SekienAkashita.jpg", 16384, 32768, 65536))
 assert len(results) == 3
 assert results[0].offset == 0
 assert results[0].length == 32857

@@ -1,6 +1,6 @@
-import os
 import pytest
-from fastcdc.lib import *
+from fastcdc.lib import chunkify
+from fastcdc.original import *
 
 TEST_FILE = os.path.join(os.path.dirname(__file__), "SekienAkashita.jpg")
 
@@ -45,83 +45,103 @@ def test_minimum_too_low():
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         FastCDC.new(array_, 63, 256, 1024)
+    with pytest.raises(AssertionError):
+        next(chunkify(array_, 63, 256, 1024))
 
 
 def test_minimum_too_high():
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         FastCDC.new(array_, 67_108_867, 256, 1024)
+    with pytest.raises(AssertionError):
+        next(chunkify(array_, 67_108_867, 256, 1024))
 
 
 def test_average_too_low():
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         FastCDC.new(array_, 64, 255, 1024)
+    with pytest.raises(AssertionError):
+        next(chunkify(array_, 64, 255, 1024))
 
 
 def test_average_too_high():
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         FastCDC.new(array_, 64, 268_435_457, 1024)
+    with pytest.raises(AssertionError):
+        next(chunkify(array_, 64, 268_435_457, 1024))
 
 
 def test_maximum_too_low():
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         FastCDC.new(array_, 64, 256, 1023)
+    with pytest.raises(AssertionError):
+        next(chunkify(array_, 64, 256, 1023))
 
 
-def test_maximum_too_high():
+def test_maximum_too_high_a():
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         FastCDC.new(array_, 64, 256, 1_073_741_825)
+    with pytest.raises(AssertionError):
+        next(chunkify(array_, 64, 256, 1_073_741_825))
 
 
 def test_all_zeros():
     array_ = bytearray([0] * 10240)
-    chunker = FastCDC.new(array_, 64, 256, 1024)
-    results = [c for c in chunker]
-    assert len(results) == 10
-    for entry in results:
-        assert entry.offset % 1024 == 0
-        assert entry.length == 1024
+    chunkera = FastCDC.new(array_, 64, 256, 1024)
+    chunkerb = chunkify(array_, 64, 256, 1024)
+    for chunkfunc in (chunkera, chunkerb):
+        results = [c for c in chunkfunc]
+        assert len(results) == 10
+        for entry in results:
+            assert entry.offset % 1024 == 0
+            assert entry.length == 1024
 
 
 def test_sekien_16k_chunks():
-    chunker = FastCDC.new(TEST_FILE, 8192, 16384, 32768)
-    results = [c for c in chunker]
-    assert len(results) == 6
-    assert results[0].offset == 0
-    assert results[0].length == 22366
-    assert results[1].offset == 22366
-    assert results[1].length == 8282
-    assert results[2].offset == 30648
-    assert results[2].length == 16303
-    assert results[3].offset == 46951
-    assert results[3].length == 18696
-    assert results[4].offset == 65647
-    assert results[4].length == 32768
-    assert results[5].offset == 98415
-    assert results[5].length == 11051
+    chunker1 = FastCDC.new(TEST_FILE, 8192, 16384, 32768)
+    chunker2 = chunkify(TEST_FILE, 8192, 16384, 32768)
+    for chunkfunc in (chunker1, chunker2):
+        results = [c for c in chunkfunc]
+        assert len(results) == 6
+        assert results[0].offset == 0
+        assert results[0].length == 22366
+        assert results[1].offset == 22366
+        assert results[1].length == 8282
+        assert results[2].offset == 30648
+        assert results[2].length == 16303
+        assert results[3].offset == 46951
+        assert results[3].length == 18696
+        assert results[4].offset == 65647
+        assert results[4].length == 32768
+        assert results[5].offset == 98415
+        assert results[5].length == 11051
 
 
 def test_sekien_32k_chunks():
-    chunker = FastCDC.new(TEST_FILE, 16384, 32768, 65536)
-    results = [c for c in chunker]
-    assert len(results) == 3
-    assert results[0].offset == 0
-    assert results[0].length == 32857
-    assert results[1].offset == 32857
-    assert results[1].length == 16408
-    assert results[2].offset == 49265
-    assert results[2].length == 60201
+    chunker1 = FastCDC.new(TEST_FILE, 16384, 32768, 65536)
+    chunker2 = chunkify(TEST_FILE, 16384, 32768, 65536)
+    for chunkfunc in (chunker1, chunker2):
+        results = [c for c in chunkfunc]
+        assert len(results) == 3
+        assert results[0].offset == 0
+        assert results[0].length == 32857
+        assert results[1].offset == 32857
+        assert results[1].length == 16408
+        assert results[2].offset == 49265
+        assert results[2].length == 60201
 
 
 def test_sekien_64k_chunks():
-    chunker = FastCDC.new(TEST_FILE, 32768, 65536, 131_072)
-    results = [c for c in chunker]
-    assert len(results) == 2
-    assert results[0].offset == 0
-    assert results[0].length == 32857
-    assert results[1].offset == 32857
-    assert results[1].length == 76609
+    chunker1 = FastCDC.new(TEST_FILE, 32768, 65536, 131_072)
+    chunker2 = chunkify(TEST_FILE, 32768, 65536, 131_072)
+    for chunkfunc in (chunker1, chunker2):
+        results = [c for c in chunkfunc]
+        assert len(results) == 2
+        assert results[0].offset == 0
+        assert results[0].length == 32857
+        assert results[1].offset == 32857
+        assert results[1].length == 76609
