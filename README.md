@@ -130,7 +130,7 @@ calculate a hash digest of the chunks.
 ### Added
 - high-level API
 - support for streams
-- upport for custom hash functions
+- support for custom hash functions
 
 
 ## [1.0.0] - 2020-05-07
