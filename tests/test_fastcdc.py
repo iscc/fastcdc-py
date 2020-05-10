@@ -1,5 +1,5 @@
 import pytest
-from fastcdc.lib import chunkify
+from fastcdc import chunkify
 from fastcdc.original import *
 
 TEST_FILE = os.path.join(os.path.dirname(__file__), "SekienAkashita.jpg")
