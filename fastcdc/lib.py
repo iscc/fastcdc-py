@@ -55,7 +55,10 @@ def chunkify(
         data = open(data, "rb")
     elif not hasattr(data, "read"):
         data = BytesIO(data)
+    return chunk_gen(data, min_size, avg_size, max_size, fat, hf)
 
+
+def chunk_gen(data, min_size, avg_size, max_size, fat, hf):
     for chunk in chunker(data, min_size, avg_size, max_size):
         if hf is not None:
             chunk.hash = hf(chunk.data).hexdigest()
