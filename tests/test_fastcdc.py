@@ -5,8 +5,8 @@ from fastcdc.original import *
 TEST_FILE = os.path.join(os.path.dirname(__file__), "SekienAkashita.jpg")
 
 
-def test_logarithm2():
-    assert logarithm2(65537) == 16
+def test_logarithm2(benchmark):
+    assert benchmark(logarithm2, 65537) == 16
     assert logarithm2(65536) == 16
     assert logarithm2(65535) == 16
     assert logarithm2(32769) == 15
@@ -14,8 +14,8 @@ def test_logarithm2():
     assert logarithm2(32767) == 15
 
 
-def test_ceil_div():
-    assert ceil_div(10, 5) == 2
+def test_ceil_div(benchmark):
+    assert benchmark(ceil_div, 10, 5) == 2
     assert ceil_div(11, 5) == 3
     assert ceil_div(10, 3) == 4
     assert ceil_div(9, 3) == 3
@@ -23,8 +23,8 @@ def test_ceil_div():
     assert ceil_div(5, 2) == 3
 
 
-def test_center_size():
-    assert center_size(50, 100, 50) == 0
+def test_center_size(benchmark):
+    assert benchmark(center_size, 50, 100, 50) == 0
     assert center_size(200, 100, 50) == 50
     assert center_size(200, 100, 40) == 40
 
@@ -34,78 +34,75 @@ def test_mask_low():
         mask(0)
 
 
-def test_mask():
-    assert mask(24) == 16_777_215
+def test_mask(benchmark):
+    assert benchmark(mask, 24) == 16_777_215
     assert mask(16) == 65535
     assert mask(10) == 1023
     assert mask(8) == 255
 
 
-def test_minimum_too_low():
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_minimum_too_low(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
-        FastCDC.new(array_, 63, 256, 1024)
-    with pytest.raises(AssertionError):
-        next(chunkify(array_, 63, 256, 1024))
+        chunk_func(array_, 63, 256, 1024)
 
 
-def test_minimum_too_high():
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_minimum_too_high(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
-        FastCDC.new(array_, 67_108_867, 256, 1024)
-    with pytest.raises(AssertionError):
-        next(chunkify(array_, 67_108_867, 256, 1024))
+        chunk_func(array_, 67_108_867, 256, 1024)
 
 
-def test_average_too_low():
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_average_too_low(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
-        FastCDC.new(array_, 64, 255, 1024)
-    with pytest.raises(AssertionError):
-        next(chunkify(array_, 64, 255, 1024))
+        chunk_func(array_, 64, 255, 1024)
 
 
-def test_average_too_high():
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_average_too_high(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
-        FastCDC.new(array_, 64, 268_435_457, 1024)
-    with pytest.raises(AssertionError):
-        next(chunkify(array_, 64, 268_435_457, 1024))
+        chunk_func(array_, 64, 268_435_457, 1024)
 
 
-def test_maximum_too_low():
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_maximum_too_low(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
-        FastCDC.new(array_, 64, 256, 1023)
-    with pytest.raises(AssertionError):
-        next(chunkify(array_, 64, 256, 1023))
+        chunk_func(array_, 64, 256, 1023)
 
 
-def test_maximum_too_high_a():
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_maximum_too_high_a(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
-        FastCDC.new(array_, 64, 256, 1_073_741_825)
-    with pytest.raises(AssertionError):
-        next(chunkify(array_, 64, 256, 1_073_741_825))
+        chunk_func(array_, 64, 256, 1_073_741_825)
 
 
-def test_all_zeros():
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_all_zeros(chunk_func, benchmark):
     array_ = bytearray([0] * 10240)
-    chunkera = FastCDC.new(array_, 64, 256, 1024)
-    chunkerb = chunkify(array_, 64, 256, 1024)
-    for chunkfunc in (chunkera, chunkerb):
-        results = [c for c in chunkfunc]
+
+    @benchmark
+    def make_chunks():
+        chunker = chunk_func(array_, 64, 256, 1024)
+        results = [c for c in chunker]
         assert len(results) == 10
         for entry in results:
             assert entry.offset % 1024 == 0
             assert entry.length == 1024
 
 
-def test_sekien_16k_chunks():
-    chunker1 = FastCDC.new(TEST_FILE, 8192, 16384, 32768)
-    chunker2 = chunkify(TEST_FILE, 8192, 16384, 32768)
-    for chunkfunc in (chunker1, chunker2):
-        results = [c for c in chunkfunc]
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_sekien_16k_chunks(chunk_func, benchmark):
+    @benchmark
+    def make_chunks():
+        chunker = chunk_func(TEST_FILE, 8192, 16384, 32768)
+        results = [c for c in chunker]
         assert len(results) == 6
         assert results[0].offset == 0
         assert results[0].length == 22366
@@ -121,11 +118,12 @@ def test_sekien_16k_chunks():
         assert results[5].length == 11051
 
 
-def test_sekien_32k_chunks():
-    chunker1 = FastCDC.new(TEST_FILE, 16384, 32768, 65536)
-    chunker2 = chunkify(TEST_FILE, 16384, 32768, 65536)
-    for chunkfunc in (chunker1, chunker2):
-        results = [c for c in chunkfunc]
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_sekien_32k_chunks(chunk_func, benchmark):
+    @benchmark
+    def make_chunks():
+        chunker = chunk_func(TEST_FILE, 16384, 32768, 65536)
+        results = [c for c in chunker]
         assert len(results) == 3
         assert results[0].offset == 0
         assert results[0].length == 32857
@@ -135,11 +133,12 @@ def test_sekien_32k_chunks():
         assert results[2].length == 60201
 
 
-def test_sekien_64k_chunks():
-    chunker1 = FastCDC.new(TEST_FILE, 32768, 65536, 131_072)
-    chunker2 = chunkify(TEST_FILE, 32768, 65536, 131_072)
-    for chunkfunc in (chunker1, chunker2):
-        results = [c for c in chunkfunc]
+@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+def test_sekien_64k_chunks(chunk_func, benchmark):
+    @benchmark
+    def make_chunks():
+        chunker = chunk_func(TEST_FILE, 32768, 65536, 131_072)
+        results = [c for c in chunker]
         assert len(results) == 2
         assert results[0].offset == 0
         assert results[0].length == 32857

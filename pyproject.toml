@@ -44,6 +44,7 @@ pytest = "^5"
 black = "^19.10b0"
 jupyterlab = "^2.1.2"
 cython = "^0.29.17"
+pytest-benchmark = "^3.2.3"
 
 [build-system]
 requires = ["poetry>=1.0", "wheel"]
