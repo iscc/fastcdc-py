@@ -7,11 +7,9 @@ Rewrite of original as generator function with convenient highler level API.
 - provide custom hash function
 """
 from dataclasses import dataclass
-import math
 from io import BytesIO
 from typing import Generator, Optional, Callable, Union, ByteString, BinaryIO, Text
-import fastcdc.const
-from fastcdc import utils
+from fastcdc import utils, const
 
 
 @dataclass
@@ -46,9 +44,9 @@ def chunkify(
     if max_size is None:
         max_size = avg_size * 8
 
-    assert fastcdc.const.MINIMUM_MIN <= min_size <= fastcdc.const.MINIMUM_MAX
-    assert fastcdc.const.AVERAGE_MIN <= avg_size <= fastcdc.const.AVERAGE_MAX
-    assert fastcdc.const.MAXIMUM_MIN <= max_size <= fastcdc.const.MAXIMUM_MAX
+    assert const.MINIMUM_MIN <= min_size <= const.MINIMUM_MAX
+    assert const.AVERAGE_MIN <= avg_size <= const.AVERAGE_MAX
+    assert const.MAXIMUM_MIN <= max_size <= const.MAXIMUM_MAX
 
     # Ensure we have a readable stream
     if isinstance(data, str):
@@ -69,9 +67,9 @@ def chunk_gen(data, min_size, avg_size, max_size, fat, hf):
 
 def chunker(data: BytesIO, min_size: int, avg_size: int, max_size: int) -> Generator:
 
-    bits = round(math.log(avg_size, 2))
-    mask_s = 2 ** (bits + 1) - 1
-    mask_l = 2 ** (bits - 1) - 1
+    bits = utils.logarithm2(avg_size)
+    mask_s = utils.mask(bits + 1)
+    mask_l = utils.mask(bits - 1)
 
     section = data.read(max_size)
     offset = 0
@@ -92,7 +90,7 @@ def chunker(data: BytesIO, min_size: int, avg_size: int, max_size: int) -> Gener
 
         barrier = utils.center_size(avg_size, min_size, data_length)
         while i < barrier:
-            pattern = (pattern >> 1) + fastcdc.const.TABLE[section[i]]
+            pattern = (pattern >> 1) + const.TABLE[section[i]]
             if not pattern & mask_s:
                 boundary = i + 1
                 break
@@ -100,7 +98,7 @@ def chunker(data: BytesIO, min_size: int, avg_size: int, max_size: int) -> Gener
 
         barrier = min(max_size, data_length)
         while i < barrier:
-            pattern = (pattern >> 1) + fastcdc.const.TABLE[section[i]]
+            pattern = (pattern >> 1) + const.TABLE[section[i]]
             if not pattern & mask_l:
                 boundary = i + 1
                 break
