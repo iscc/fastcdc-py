@@ -11,7 +11,7 @@ import math
 from io import BytesIO
 from typing import Generator, Optional, Callable, Union, ByteString, BinaryIO, Text
 import fastcdc.const
-from fastcdc import original
+from fastcdc import utils
 
 
 @dataclass
@@ -90,7 +90,7 @@ def chunker(data: BytesIO, min_size: int, avg_size: int, max_size: int) -> Gener
             boundary = data_length
             break
 
-        barrier = original.center_size(avg_size, min_size, data_length)
+        barrier = utils.center_size(avg_size, min_size, data_length)
         while i < barrier:
             pattern = (pattern >> 1) + fastcdc.const.TABLE[section[i]]
             if not pattern & mask_s:

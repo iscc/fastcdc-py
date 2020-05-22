@@ -1,44 +1,11 @@
 import pytest
 from fastcdc import chunkify
 from fastcdc.original import *
+import pyximport
+
+pyximport.install()
 
 TEST_FILE = os.path.join(os.path.dirname(__file__), "SekienAkashita.jpg")
-
-
-def test_logarithm2(benchmark):
-    assert benchmark(logarithm2, 65537) == 16
-    assert logarithm2(65536) == 16
-    assert logarithm2(65535) == 16
-    assert logarithm2(32769) == 15
-    assert logarithm2(32768) == 15
-    assert logarithm2(32767) == 15
-
-
-def test_ceil_div(benchmark):
-    assert benchmark(ceil_div, 10, 5) == 2
-    assert ceil_div(11, 5) == 3
-    assert ceil_div(10, 3) == 4
-    assert ceil_div(9, 3) == 3
-    assert ceil_div(6, 2) == 3
-    assert ceil_div(5, 2) == 3
-
-
-def test_center_size(benchmark):
-    assert benchmark(center_size, 50, 100, 50) == 0
-    assert center_size(200, 100, 50) == 50
-    assert center_size(200, 100, 40) == 40
-
-
-def test_mask_low():
-    with pytest.raises(AssertionError):
-        mask(0)
-
-
-def test_mask(benchmark):
-    assert benchmark(mask, 24) == 16_777_215
-    assert mask(16) == 65535
-    assert mask(10) == 1023
-    assert mask(8) == 255
 
 
 @pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])

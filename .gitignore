@@ -132,3 +132,5 @@ dmypy.json
 
 # Jetbrains
 .idea
+
+.benchmarks
