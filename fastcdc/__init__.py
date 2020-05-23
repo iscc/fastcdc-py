@@ -1,7 +1,14 @@
-__version__ = "1.1.0"
+import os
+import click
+
+os.environ["LOGURU_AUTOINIT"] = "False"
 from fastcdc.original import FastCDC
 
 try:
-    from fastcdc.cli import chunkify
+    from fastcdc.fastcdc_cy import fastcdc_cy as fastcdc
 except ImportError:
-    from fastcdc.lib import chunkify
+    from fastcdc.fastcdc_py import fastcdc_py as fastcdc
+
+    click.secho("Running in pure python mode (slow)", fg="bright_magenta")
+
+__version__ = "1.1.0"

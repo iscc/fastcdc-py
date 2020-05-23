@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import click
-from fastcdc import __version__, chunkify
+from fastcdc import __version__, fastcdc
 import hashlib
 
 
@@ -34,8 +34,9 @@ def cli(file, size, min_size, max_size, hash_function):
         raise click.BadOptionUsage("hf", msg)
 
     hf = getattr(hashlib, hash_function)
-    chunker = chunkify(file, min_size, size, max_size, hf=hf)
+    chunker = fastcdc(file, min_size, size, max_size, hf=hf)
 
+    num_chunks = 0
     for chunk in chunker:
         click.secho("hash", fg="bright_magenta", nl=False)
         click.secho("=", nl=False)
@@ -46,6 +47,7 @@ def cli(file, size, min_size, max_size, hash_function):
         click.secho(" size", fg="bright_magenta", nl=False)
         click.secho("=", nl=False)
         click.secho(str(chunk.length), fg="bright_cyan")
+        num_chunks += 1
 
 
 if __name__ == "__main__":

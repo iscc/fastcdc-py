@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 The shared library can also be built manually using the command:
-$ cythonize -X language_level=3 -a -i ./fastcdc/cylib.py
+$ cythonize -X language_level=3 -a -i ./fastcdc/fastcdc_cy.pyx
 """
 from distutils.command.build_ext import build_ext
 
@@ -20,7 +20,7 @@ def build(setup_kwargs):
 
         setup_kwargs.update(
             dict(
-                ext_modules=cythonize(["fastcdc/cylib.py"]),
+                ext_modules=cythonize(["fastcdc/fastcdc_cy.pyx"]),
                 cmdclass=dict(build_ext=BuildExt),
             )
         )

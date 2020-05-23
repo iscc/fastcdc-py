@@ -1,56 +1,55 @@
 import pytest
-from fastcdc import chunkify
 from fastcdc.original import *
-import pyximport
+from fastcdc.fastcdc_py import fastcdc_py
+from fastcdc.fastcdc_cy import fastcdc_cy
 
-pyximport.install()
 
 TEST_FILE = os.path.join(os.path.dirname(__file__), "SekienAkashita.jpg")
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_minimum_too_low(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         chunk_func(array_, 63, 256, 1024)
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_minimum_too_high(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         chunk_func(array_, 67_108_867, 256, 1024)
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_average_too_low(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         chunk_func(array_, 64, 255, 1024)
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_average_too_high(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         chunk_func(array_, 64, 268_435_457, 1024)
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_maximum_too_low(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         chunk_func(array_, 64, 256, 1023)
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_maximum_too_high_a(chunk_func):
     array_ = bytearray([0] * 2048)
     with pytest.raises(AssertionError):
         chunk_func(array_, 64, 256, 1_073_741_825)
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_all_zeros(chunk_func, benchmark):
     array_ = bytearray([0] * 10240)
 
@@ -64,7 +63,7 @@ def test_all_zeros(chunk_func, benchmark):
             assert entry.length == 1024
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_sekien_16k_chunks(chunk_func, benchmark):
     @benchmark
     def make_chunks():
@@ -85,7 +84,7 @@ def test_sekien_16k_chunks(chunk_func, benchmark):
         assert results[5].length == 11051
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_sekien_32k_chunks(chunk_func, benchmark):
     @benchmark
     def make_chunks():
@@ -100,11 +99,11 @@ def test_sekien_32k_chunks(chunk_func, benchmark):
         assert results[2].length == 60201
 
 
-@pytest.mark.parametrize("chunk_func", [chunkify, FastCDC.new])
+@pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
 def test_sekien_64k_chunks(chunk_func, benchmark):
     @benchmark
     def make_chunks():
-        chunker = chunk_func(TEST_FILE, 32768, 65536, 131_072)
+        chunker = chunk_func(TEST_FILE, 32768, 65536, 131072)
         results = [c for c in chunker]
         assert len(results) == 2
         assert results[0].offset == 0
