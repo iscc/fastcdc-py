@@ -29,12 +29,12 @@ def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
     mask_s = mask(bits + 1)
     mask_l = mask(bits - 1)
 
-    read_size = max(1024 * 32, max_size)
-    blob = stream.read(read_size)
+    read_size = max(1024 * 64, max_size)
+    blob = memoryview(stream.read(read_size))
     offset = 0
     while blob:
         if len(blob) <= max_size:
-            blob += stream.read(read_size)
+            blob = memoryview(bytes(blob) + stream.read(read_size))
         cp = cdc_offset(blob, min_size, avg_size, max_size, cs, mask_s, mask_l)
         raw = blob[:cp] if fat else b""
         h = hf(blob[:cp]).hexdigest() if hf else ""

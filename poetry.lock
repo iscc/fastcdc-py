@@ -105,6 +105,17 @@ version = "7.1.2"
 
 [[package]]
 category = "main"
+description = "Extends click.Group to invoke a command without explicit subcommand name"
+name = "click-default-group"
+optional = false
+python-versions = "*"
+version = "1.2.2"
+
+[package.dependencies]
+click = "*"
+
+[[package]]
+category = "main"
 description = "A flexible, customizable timer for your Python code"
 name = "codetiming"
 optional = false
@@ -598,7 +609,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.8.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Get CPU info with pure Python 2 & 3"
 name = "py-cpuinfo"
 optional = false
@@ -864,7 +875,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 cython = ["cython"]
 
 [metadata]
-content-hash = "8e59a5999b24377708d675fb44d992078c19cb8cbe6eb30f7fdfb038261fa66d"
+content-hash = "893d823e1f4ec8f54aec7b9bdf5426c59410c1c6b8c637534f381aaea4d5b378"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -907,6 +918,9 @@ chardet = [
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
     {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
+]
+click-default-group = [
+    {file = "click-default-group-1.2.2.tar.gz", hash = "sha256:d9560e8e8dfa44b3562fbc9425042a0fd6d21956fcc2db0077f63f34253ab904"},
 ]
 codetiming = [
     {file = "codetiming-1.2.0-py3-none-any.whl", hash = "sha256:9be79be7b109fbf85991ddd937208b011911dff8925e6259097a4f0f79f6a4ce"},

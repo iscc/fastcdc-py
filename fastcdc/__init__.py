@@ -1,8 +1,6 @@
-import os
+# -*- coding: utf-8 -*-
 import click
 
-os.environ["LOGURU_AUTOINIT"] = "False"
-from fastcdc.original import FastCDC
 
 try:
     from fastcdc.fastcdc_cy import fastcdc_cy as fastcdc
@@ -11,4 +9,4 @@ except ImportError:
 
     click.secho("Running in pure python mode (slow)", fg="bright_magenta")
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"

@@ -48,7 +48,7 @@ hash=0fe7305ba21a5a5ca9f89962c5a6f3e29cd3e2b36f00e565858e0012e5f8df36 offset=492
 ### Show help
 
 ```shell
-$ fastcdc -h 
+$ fastcdc -h
 Usage: fastcdc [OPTIONS] FILE
 
   Splits a (large) file into variable sized chunks and computes hashes.
@@ -69,9 +69,9 @@ The  tests also have some short examples of using the chunker, of which this
 code snippet is an example:
 
 ```python
-from fastcdc import chunkify
+from fastcdc import fastcdc
 
-results = list(chunkify("tests/SekienAkashita.jpg", 16384, 32768, 65536))
+results = list(fastcdc("tests/SekienAkashita.jpg", 16384, 32768, 65536))
 assert len(results) == 3
 assert results[0].offset == 0
 assert results[0].length == 32857
@@ -125,6 +125,12 @@ calculate a hash digest of the chunks.
 
 ## Change Log
 
+## [1.2.0] - 2020-05-23
+
+### Added
+- faster optional cython implementation
+- benchmark command
+
 ## [1.1.0] - 2020-05-09
 
 ### Added
@@ -136,5 +142,5 @@ calculate a hash digest of the chunks.
 ## [1.0.0] - 2020-05-07
 
 ### Added
-- Initial release (port of [nlfiedler/fastcdc-rs](https://github.com/nlfiedler/fastcdc-rs)). 
+- Initial release (port of [nlfiedler/fastcdc-rs](https://github.com/nlfiedler/fastcdc-rs)).
 
