@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from statistics import mean
 import click
 from humanize import naturalsize as nsize
 from codetiming import Timer
@@ -40,4 +41,6 @@ def benchmark():
             t.stop()
             data_per_s = num_bytes / t.last
             click.echo("{}: {}/s".format(func.__name__, nsize(data_per_s)))
+        avg_size = mean([c.length for c in result])
+        click.echo("Real AVG:  {}".format(nsize(avg_size)))
         click.echo()
