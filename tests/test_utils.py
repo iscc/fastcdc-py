@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
+from os import DirEntry
+from typing import Generator
 from fastcdc import utils
 
 
@@ -37,3 +39,15 @@ def test_mask():
 def test_mask_low():
     with pytest.raises(AssertionError):
         utils.mask(0)
+
+
+def test_supported_hashes():
+    assert isinstance(utils.supported_hashes(), list)
+    assert "md5" in utils.supported_hashes()
+
+
+def test_iter_files():
+    assert isinstance(utils.iter_files("."), Generator)
+    files = list(utils.iter_files("."))
+    assert isinstance(files[0], DirEntry)
+    assert "SekienAkashita.jpg" in [entry.name for entry in files]
