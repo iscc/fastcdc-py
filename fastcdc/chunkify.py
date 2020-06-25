@@ -2,20 +2,7 @@
 import click
 from fastcdc import __version__, fastcdc
 import hashlib
-
-
-class DefaultHelp(click.Command):
-    def __init__(self, *args, **kwargs):
-        context_settings = kwargs.setdefault("context_settings", {})
-        if "help_option_names" not in context_settings:
-            context_settings["help_option_names"] = ["-h", "--help"]
-        self.help_flag = context_settings["help_option_names"][0]
-        super(DefaultHelp, self).__init__(*args, **kwargs)
-
-    def parse_args(self, ctx, args):
-        if not args:
-            args = [self.help_flag]
-        return super(DefaultHelp, self).parse_args(ctx, args)
+from fastcdc.utils import DefaultHelp, supported_hashes
 
 
 @click.command(cls=DefaultHelp)
@@ -40,7 +27,7 @@ class DefaultHelp(click.Command):
 )
 def chunkify(file, size, min_size, max_size, hash_function):
     """Find variable sized chunks for FILE and compute hashes."""
-    supported = list(hashlib.algorithms_guaranteed)
+    supported = supported_hashes()
     if hash_function not in supported:
         msg = "'{}' is not a supported hash.\nTry one of these:\n{}".format(
             hash_function, ", ".join(supported)

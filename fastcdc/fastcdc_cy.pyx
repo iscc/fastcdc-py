@@ -91,6 +91,10 @@ cdef class Chunk:
         self.data = data
         self.hash = hash
 
+    def __str__(self):
+        return "hash={} offset={} size={}".format(
+            self.hash, self.offset, self.length
+        )
 
 cdef uint32_t logarithm2(uint32_t value):
     return lround(log2(value))

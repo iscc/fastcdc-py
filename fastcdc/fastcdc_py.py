@@ -74,6 +74,11 @@ class Chunk:
         self.data = data
         self.hash = hash
 
+    def __str__(self):
+        return "hash={} offset={} size={}".format(
+            self.hash, self.offset, self.length
+        )
+
 
 def logarithm2(value):
     return round(log2(value))
