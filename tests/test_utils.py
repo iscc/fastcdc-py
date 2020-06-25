@@ -50,4 +50,3 @@ def test_iter_files():
     assert isinstance(utils.iter_files("."), Generator)
     files = list(utils.iter_files("."))
     assert isinstance(files[0], DirEntry)
-    assert "SekienAkashita.jpg" in [entry.name for entry in files]
