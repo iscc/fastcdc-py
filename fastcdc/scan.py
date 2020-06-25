@@ -63,6 +63,7 @@ def scan(path, recursive, size, min_size, max_size, hash_function):
                 fingerprints.add(chunk.hash)
     t.stop()
     data_per_s = bytes_total / Timer.timers.mean("scan")
+    dd_ratio = bytes_dupe / bytes_total * 100
     click.echo("Files:          {}".format(intcomma(len(files))))
     click.echo(
         "Chunk Sizes:    min {} - avg {} - max {}".format(min_size, size, max_size)
@@ -70,6 +71,7 @@ def scan(path, recursive, size, min_size, max_size, hash_function):
     click.echo("Unique Chunks:  {}".format(intcomma(len(fingerprints))))
     click.echo("Total Data:     {}".format(naturalsize(bytes_total)))
     click.echo("Dupe Data:      {}".format(naturalsize(bytes_dupe)))
+    click.echo("DeDupe Ratio:   {:.2f} %".format(dd_ratio))
     click.echo("Throughput:     {}/s".format(naturalsize(data_per_s)))
 
 
