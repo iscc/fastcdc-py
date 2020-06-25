@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import hashlib
-import os
-from typing import List
 from humanize import intcomma, naturalsize
 import click
 from codetiming import Timer
@@ -52,7 +50,6 @@ def scan(path, recursive, size, min_size, max_size, hash_function):
         raise click.BadOptionUsage("hf", msg)
 
     hf = getattr(hashlib, hash_function)
-    files: List[os.DirEntry]
     files = list(iter_files(path, recursive))
     t = Timer("scan", logger=None)
     t.start()

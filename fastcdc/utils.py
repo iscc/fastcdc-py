@@ -69,9 +69,8 @@ def iter_files(path, recursive=False):
     if recursive:
         for entry in scandir(path):
             if entry.is_dir(follow_symlinks=False):
-                if not entry.is_symlink():
-                    yield from iter_files(entry.path)
-            else:
+                yield from iter_files(entry.path, recursive)
+            elif not entry.is_symlink():
                 yield entry
     else:
         for entry in scandir(path):

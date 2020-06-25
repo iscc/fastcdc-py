@@ -75,9 +75,7 @@ class Chunk:
         self.hash = hash
 
     def __str__(self):
-        return "hash={} offset={} size={}".format(
-            self.hash, self.offset, self.length
-        )
+        return "hash={} offset={} size={}".format(self.hash, self.offset, self.length)
 
 
 def logarithm2(value):
