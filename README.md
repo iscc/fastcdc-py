@@ -4,20 +4,29 @@
 [![Version](https://img.shields.io/pypi/v/fastcdc.svg)](https://pypi.python.org/pypi/fastcdc/)
 [![Downloads](https://pepy.tech/badge/fastcdc)](https://pepy.tech/project/fastcdc)
 
-This package implements the "FastCDC" content defined chunking algorithm in pure
-Python. A critical aspect of its behavior is that it returns exactly the same
-results for the same input. To learn more about content defined chunking and its
-applications, see the reference material linked below.
+This package implements the "FastCDC" content defined chunking algorithm in
+Python with optional cython support. A critical aspect of its behavior is that it
+returns exactly the same results for the same input. To learn more about content
+defined chunking and its applications, see the reference material linked below.
 
 
 ## Requirements
 
-* [Python](https://www.python.org/) Version 3.6 and later.
+* [Python](https://www.python.org/) Version 3.6 and later. Tested on Linux, Mac and
+Windows
 
 ## Installing
 
 ```shell
-$ pip3 install fastcdc
+$ pip install fastcdc
+```
+
+To enable the cython based C-Extension and/or add additional support hash algorithms
+([xxhash](https://github.com/Cyan4973/xxHash) and
+[blake3](https://github.com/BLAKE3-team/BLAKE3/)) use
+
+```shell
+$ pip install fastcdc[cython,hashes]
 ```
 
 ## Example Usage
@@ -48,20 +57,17 @@ hash=0fe7305ba21a5a5ca9f89962c5a6f3e29cd3e2b36f00e565858e0012e5f8df36 offset=492
 ### Show help
 
 ```shell
-$ fastcdc -h
-Usage: fastcdc [OPTIONS] FILE
-
-  Splits a (large) file into variable sized chunks and computes hashes.
+$ fastcdc
+Usage: fastcdc [OPTIONS] COMMAND [ARGS]...
 
 Options:
-  --version                  Show the version and exit.
-  -s, --size INTEGER         The desired average size of the chunks.
-                             [default: 16384]
+  --version  Show the version and exit.
+  --help     Show this message and exit.
 
-  -mi, --min-size INTEGER    Minimum chunk size (default size/4)
-  -ma, --max-size INTEGER    Maximum chunk size (default size*8)
-  -hf, --hash-function TEXT  [default: sha256]
-  --help                     Show this message and exit.
+Commands:
+  chunkify*  Find variable sized chunks for FILE and compute hashes.
+  benchmark  Benchmark chunking performance.
+  scan       Scan files in directory and report duplication.
 ```
 
 ### Use from your python code
@@ -124,6 +130,9 @@ calculate a hash digest of the chunks.
     + Similar but slightly earlier algorithm by some of the same researchers.
 
 ## Change Log
+
+## [1.3.0] - 2020-06-25
+- add new `scan` command to calculate deduplication ratio for directories
 
 ## [1.2.0] - 2020-05-23
 
