@@ -2,9 +2,7 @@ import pytest
 from fastcdc.original import *
 from fastcdc.fastcdc_py import fastcdc_py
 from fastcdc.fastcdc_cy import fastcdc_cy
-
-
-TEST_FILE = os.path.join(os.path.dirname(__file__), "SekienAkashita.jpg")
+from tests import TEST_FILE
 
 
 @pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
