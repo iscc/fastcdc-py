@@ -37,7 +37,7 @@ cython = { version = "^0.29", optional = true}
 humanize = "^2.4.0"
 codetiming = "^1.2.0"
 click-default-group = "^1.2.2"
-py-cpuinfo = "^5.0.0"
+py-cpuinfo = "^6.0.0"
 
 [tool.poetry.extras]
 cython = ["cython"]
