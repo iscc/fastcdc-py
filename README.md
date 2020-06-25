@@ -115,10 +115,8 @@ data parity with existing implementations.
 
 ## Prior Art
 
-This crate is little more than a rewrite of the implementation by Joran Dirk
-Greef (see the ronomon link below), in Rust, and greatly simplified in usage.
-One significant difference is that the chunker in this crate does _not_
-calculate a hash digest of the chunks.
+This package started as Python port of the implementation by Nathan Fiedler (see the
+nlfiedler link below).
 
 * [nlfiedler/fastcdc-rs](https://github.com/nlfiedler/fastcdc-rs)
     + Rust implementation on which this code is based.
@@ -131,7 +129,7 @@ calculate a hash digest of the chunks.
 
 ## Change Log
 
-## [1.3.0] - 2020-06-25
+## [1.3.0] - 2020-06-26
 - add new `scan` command to calculate deduplication ratio for directories
 
 ## [1.2.0] - 2020-05-23
