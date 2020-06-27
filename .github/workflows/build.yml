@@ -1,0 +1,130 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-linux:
+    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}-latest
+    container: quay.io/pypa/manylinux2014_x86_64
+    strategy:
+      matrix:
+        os: [Ubuntu]
+        python-version: [3.6, 3.7, 3.8]
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install poetry
+      shell: bash
+      run: |
+        curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+        python get-poetry.py --preview -y
+        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
+        poetry config virtualenvs.in-project true
+
+    - name: Install dependencies
+      shell: bash
+      run: poetry install --extras "cython hashes"
+
+    - name: Build wheel
+      shell: bash
+      run: poetry build -f wheel
+
+    - name: Apply auditwheel
+        run: auditwheel repair -w dist dist/*
+
+    - name: Remove linux wheel
+      run: rm dist/*-linux_x86_64.whl
+
+    - name: Archive dist artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist-linux-${{ matrix.python-version }}
+        path: dist
+
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Set up Python ${{ matrix.python-version }} x64
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: x64
+
+    - name: Install poetry
+      shell: bash
+      run: |
+        curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+        python get-poetry.py --preview -y
+        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
+        poetry config virtualenvs.in-project true
+
+    - name: Install dependencies
+      shell: bash
+      run: poetry install --extras "cython hashes"
+
+    - name: Build wheel
+      shell: bash
+      run: poetry build -f wheel
+
+    - name: Archive dist artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist-macos-${{ matrix.python-version }}
+        path: dist
+
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Download Build Tools for Visual Studio 2019
+      run: Invoke-WebRequest -Uri https://aka.ms/vs/16/release/vs_buildtools.exe -OutFile vs_buildtools.exe
+
+    - name: Run vs_buildtools.exe install
+      run: ./vs_buildtools.exe --quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 --add Microsoft.VisualStudio.Component.VC.140 --includeRecommended
+
+    - name: Set up Python ${{ matrix.python-version }} x64
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: x64
+
+    - name: Install poetry
+      run: |
+        curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+        python get-poetry.py --preview -y
+        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
+        poetry config virtualenvs.in-project true
+
+    - name: Install dependencies
+      run: poetry install --extras "cython hashes"
+
+    - name: Build wheel
+      run: poetry build -f wheel
+
+    - name: Archive dist artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist-windows-${{ matrix.python-version }}
+        path: dist
