@@ -54,6 +54,19 @@ hash=13f6a4c6d42df2b76c138c13e86e1379c203445055c2b5f043a5f6c291fa520d offset=328
 hash=0fe7305ba21a5a5ca9f89962c5a6f3e29cd3e2b36f00e565858e0012e5f8df36 offset=49265 size=60201
 ```
 
+###  Scan files in directory and report duplication.
+```shell
+$ fastcdc scan ~/Downloads
+[####################################]  100%
+Files:          1,332
+Chunk Sizes:    min 4096 - avg 16384 - max 131072
+Unique Chunks:  506,077
+Total Data:     9.3 GB
+Dupe Data:      873.8 MB
+DeDupe Ratio:   9.36 %
+Throughput:     135.2 MB/s
+```
+
 ### Show help
 
 ```shell
