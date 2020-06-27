@@ -55,7 +55,11 @@ def scan(path, recursive, size, min_size, max_size, hash_function):
     t.start()
     with click.progressbar(files) as pgbar:
         for entry in pgbar:
-            chunker = fastcdc.fastcdc(entry.path, min_size, size, max_size, hf=hf)
+            try:
+                chunker = fastcdc.fastcdc(entry.path, min_size, size, max_size, hf=hf)
+            except Exception as e:
+                click.echo("\n for {}".format(entry.path))
+                click.echo(e)
             for chunk in chunker:
                 bytes_total += chunk.length
                 if chunk.hash in fingerprints:
