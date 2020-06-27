@@ -39,7 +39,7 @@ jobs:
       run: poetry build -f wheel
 
     - name: Apply auditwheel
-        run: auditwheel repair -w dist dist/*
+      run: auditwheel repair -w dist dist/*
 
     - name: Remove linux wheel
       run: rm dist/*-linux_x86_64.whl
