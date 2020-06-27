@@ -81,7 +81,8 @@ cdef uint32_t cdc_offset(
 
 
 cdef class Chunk:
-    cdef readonly int offset, length
+    cdef readonly unsigned long long offset
+    cdef readonly int length
     cdef readonly char* data
     cdef readonly str hash
 
@@ -95,6 +96,7 @@ cdef class Chunk:
         return "hash={} offset={} size={}".format(
             self.hash, self.offset, self.length
         )
+
 
 cdef uint32_t logarithm2(uint32_t value):
     return lround(log2(value))
