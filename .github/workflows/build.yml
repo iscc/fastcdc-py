@@ -6,37 +6,21 @@ on:
       - master
 
 jobs:
-  build-linux:
-    name: ${{ matrix.os }} / ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}-latest
+
+  build-linux-cp36:
+    runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2014_x86_64
-    strategy:
-      matrix:
-        os: [Ubuntu]
-        python-version: [3.6, 3.7, 3.8]
+
     steps:
     - uses: actions/checkout@master
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install poetry
-      shell: bash
+    - name: Install Python package dependencies
       run: |
-        curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
-        python get-poetry.py --preview -y
-        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
-        poetry config virtualenvs.in-project true
+        /opt/python/cp36-cp36m/bin/python -m pip install poetry
+        /opt/python/cp36-cp36m/bin/python -m poetry install --extras "cython hashes"
 
-    - name: Install dependencies
-      shell: bash
-      run: poetry install --extras "cython hashes"
-
-    - name: Build wheel
-      shell: bash
-      run: poetry build -f wheel
+    - name: Build binary wheel
+      run: /opt/python/cp36-cp36m/bin/python -m poetry build -f wheel
 
     - name: Apply auditwheel
       run: auditwheel repair -w dist dist/*
@@ -47,7 +31,61 @@ jobs:
     - name: Archive dist artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: dist-linux-${{ matrix.python-version }}
+        name: dist-linux-3.5
+        path: dist
+
+  build-linux-cp37:
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Install Python package dependencies
+      run: |
+        /opt/python/cp37-cp37m/bin/python -m pip install poetry
+        /opt/python/cp37-cp37m/bin/python -m poetry install --extras "cython hashes"
+
+    - name: Build binary wheel
+      run: /opt/python/cp37-cp37m/bin/python -m poetry build -f wheel
+
+    - name: Apply auditwheel
+      run: auditwheel repair -w dist dist/*
+
+    - name: Remove linux wheel
+      run: rm dist/*-linux_x86_64.whl
+
+    - name: Archive dist artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist-linux-3.6
+        path: dist
+
+  build-linux-cp38:
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Install Python package dependencies
+      run: |
+        /opt/python/cp38-cp38m/bin/python -m pip install poetry
+        /opt/python/cp38-cp38m/bin/python -m poetry install --extras "cython hashes"
+
+    - name: Build binary wheel
+      run: /opt/python/cp38-cp38m/bin/python -m poetry build -f wheel
+
+    - name: Apply auditwheel
+      run: auditwheel repair -w dist dist/*
+
+    - name: Remove linux wheel
+      run: rm dist/*-linux_x86_64.whl
+
+    - name: Archive dist artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist-linux-3.7
         path: dist
 
   build-macos:
@@ -66,20 +104,12 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: x64
 
-    - name: Install poetry
-      shell: bash
+    - name: Install Python package dependencies
       run: |
-        curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
-        python get-poetry.py --preview -y
-        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
-        poetry config virtualenvs.in-project true
+        pip install poetry
+        poetry install --extras "cython hashes"
 
-    - name: Install dependencies
-      shell: bash
-      run: poetry install --extras "cython hashes"
-
-    - name: Build wheel
-      shell: bash
+    - name: Build binary wheel
       run: poetry build -f wheel
 
     - name: Archive dist artifacts
@@ -110,17 +140,12 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: x64
 
-    - name: Install poetry
+    - name: Install Python package dependencies
       run: |
-        curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
-        python get-poetry.py --preview -y
-        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
-        poetry config virtualenvs.in-project true
+        pip install poetry
+        poetry install --extras "cython hashes"
 
-    - name: Install dependencies
-      run: poetry install --extras "cython hashes"
-
-    - name: Build wheel
+    - name: Build binary wheel
       run: poetry build -f wheel
 
     - name: Archive dist artifacts
