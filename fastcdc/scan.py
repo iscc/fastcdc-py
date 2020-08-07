@@ -59,24 +59,28 @@ def scan(path, recursive, size, min_size, max_size, hash_function):
                 chunker = fastcdc.fastcdc(entry.path, min_size, size, max_size, hf=hf)
             except Exception as e:
                 click.echo("\n for {}".format(entry.path))
-                click.echo(e)
+                click.echo(repr(e))
+                continue
             for chunk in chunker:
                 bytes_total += chunk.length
                 if chunk.hash in fingerprints:
                     bytes_dupe += chunk.length
                 fingerprints.add(chunk.hash)
     t.stop()
-    data_per_s = bytes_total / Timer.timers.mean("scan")
-    dd_ratio = bytes_dupe / bytes_total * 100
-    click.echo("Files:          {}".format(intcomma(len(files))))
-    click.echo(
-        "Chunk Sizes:    min {} - avg {} - max {}".format(min_size, size, max_size)
-    )
-    click.echo("Unique Chunks:  {}".format(intcomma(len(fingerprints))))
-    click.echo("Total Data:     {}".format(naturalsize(bytes_total)))
-    click.echo("Dupe Data:      {}".format(naturalsize(bytes_dupe)))
-    click.echo("DeDupe Ratio:   {:.2f} %".format(dd_ratio))
-    click.echo("Throughput:     {}/s".format(naturalsize(data_per_s)))
+    if bytes_total:
+        data_per_s = bytes_total / Timer.timers.mean("scan")
+        dd_ratio = bytes_dupe / bytes_total * 100
+        click.echo("Files:          {}".format(intcomma(len(files))))
+        click.echo(
+            "Chunk Sizes:    min {} - avg {} - max {}".format(min_size, size, max_size)
+        )
+        click.echo("Unique Chunks:  {}".format(intcomma(len(fingerprints))))
+        click.echo("Total Data:     {}".format(naturalsize(bytes_total)))
+        click.echo("Dupe Data:      {}".format(naturalsize(bytes_dupe)))
+        click.echo("DeDupe Ratio:   {:.2f} %".format(dd_ratio))
+        click.echo("Throughput:     {}/s".format(naturalsize(data_per_s)))
+    else:
+        click.echo("No data.")
 
 
 if __name__ == "__main__":
