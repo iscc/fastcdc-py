@@ -38,7 +38,7 @@ def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
         if len(blob) <= max_size:
             blob  = memoryview(bytes(blob) + stream.read(read_size))
         cp = cdc_offset(blob, min_size, avg_size, max_size, cs, mask_s, mask_l)
-        raw = blob[:cp] if fat else b''
+        raw = blob[:cp].tobytes() if fat else b''
         h = hf(blob[:cp]).hexdigest() if hf else ''
         yield Chunk(offset, cp, raw, h)
         offset += cp
