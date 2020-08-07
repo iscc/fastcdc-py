@@ -10,7 +10,9 @@ from fastcdc.utils import DefaultHelp, iter_files, supported_hashes
 
 @click.command(cls=DefaultHelp)
 @click.argument(
-    "path", type=click.Path(exists=True, file_okay=False, resolve_path=True)
+    "paths",
+    type=click.Path(exists=True, file_okay=False, resolve_path=True),
+    nargs=-1,
 )
 @click.option(
     "-r", "--recursive", help="Scan directory tree recursively.", is_flag=True,
@@ -32,7 +34,7 @@ from fastcdc.utils import DefaultHelp, iter_files, supported_hashes
 @click.option(
     "-hf", "--hash-function", type=click.STRING, default="sha256", show_default=True
 )
-def scan(path, recursive, size, min_size, max_size, hash_function):
+def scan(paths, recursive, size, min_size, max_size, hash_function):
     """Scan files in directory and report duplication."""
     if min_size is None:
         min_size = size // 4
@@ -50,7 +52,9 @@ def scan(path, recursive, size, min_size, max_size, hash_function):
         raise click.BadOptionUsage("hf", msg)
 
     hf = getattr(hashlib, hash_function)
-    files = list(iter_files(path, recursive))
+    files = []
+    for path in paths:
+        files += list(iter_files(path, recursive))
     t = Timer("scan", logger=None)
     t.start()
     with click.progressbar(files) as pgbar:
