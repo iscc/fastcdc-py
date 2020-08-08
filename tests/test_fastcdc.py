@@ -1,7 +1,9 @@
+from hashlib import sha256
+
 import pytest
 from fastcdc.original import *
-from fastcdc.fastcdc_py import fastcdc_py
-from fastcdc.fastcdc_cy import fastcdc_cy
+from fastcdc.fastcdc_py import fastcdc_py, chunk_generator as chunk_generator_py
+from fastcdc.fastcdc_cy import fastcdc_cy, chunk_generator as chunk_generator_cy
 from tests import TEST_FILE
 
 
@@ -108,3 +110,15 @@ def test_sekien_64k_chunks(chunk_func, benchmark):
         assert results[0].length == 32857
         assert results[1].offset == 32857
         assert results[1].length == 76609
+
+
+def test_chunk_generator_py_fat():
+    with open(TEST_FILE, 'rb') as stream:
+        cg = chunk_generator_py(stream, 256, 1024, 8192, fat=True, hf=sha256)
+        assert len(list(cg)) == 97
+
+
+def test_chunk_generator_cy_fat():
+    with open(TEST_FILE, 'rb') as stream:
+        cg = chunk_generator_cy(stream, 256, 1024, 8192, fat=True, hf=sha256)
+        assert len(list(cg)) == 97
