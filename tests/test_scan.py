@@ -18,6 +18,12 @@ def test_scan_path():
     assert "Chunk Sizes" in result.output
 
 
+def test_scan_multiple_paths():
+    result = r.invoke(cli, ["scan", TEST_DIR, ROOT_DIR])
+    assert result.exit_code == 0
+    assert "Chunk Sizes" in result.output
+
+
 def test_scan_custom_params():
     result = r.invoke(cli, ["scan", "-r", "-s", "1024", "-hf", "xxh64", ROOT_DIR])
     assert result.exit_code == 0
