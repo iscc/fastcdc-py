@@ -38,15 +38,11 @@ codetiming = "^1.2.0"
 click-default-group = "^1.2.2"
 py-cpuinfo = "^6.0.0"
 
-cython = { version = "^0.29", optional = true }
 xxhash = { version = "^1.4.4", optional = true }
 blake3 = { version = "^0.1.5", optional = true }
 
-
 [tool.poetry.extras]
-cython = ["cython"]
 hashes = ["xxhash", "blake3"]
-
 
 [tool.poetry.dev-dependencies]
 pytest = "^5"
@@ -56,5 +52,5 @@ cython = "^0.29.17"
 pytest-benchmark = "^3.2.3"
 
 [build-system]
-requires = ["poetry>=1.0", "wheel"]
+requires = ["poetry>=1.0", "setuptools", "wheel", "cython"]
 build-backend = "poetry.masonry.api"
