@@ -10,9 +10,7 @@ from fastcdc.utils import DefaultHelp, iter_files, supported_hashes
 
 @click.command(cls=DefaultHelp)
 @click.argument(
-    "paths",
-    type=click.Path(exists=True, file_okay=False, resolve_path=True),
-    nargs=-1,
+    "paths", type=click.Path(exists=True, file_okay=False, resolve_path=True), nargs=-1,
 )
 @click.option(
     "-r", "--recursive", help="Scan directory tree recursively.", is_flag=True,

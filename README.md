@@ -5,8 +5,7 @@
 [![Downloads](https://pepy.tech/badge/fastcdc)](https://pepy.tech/project/fastcdc)
 
 This package implements the "FastCDC" content defined chunking algorithm in
-Python with optional cython support. A critical aspect of its behavior is that it
-returns exactly the same results for the same input. To learn more about content
+Python with optional cython support. To learn more about content
 defined chunking and its applications, see the reference material linked below.
 
 
@@ -141,6 +140,12 @@ nlfiedler link below).
     + Similar but slightly earlier algorithm by some of the same researchers.
 
 ## Change Log
+
+## [1.4.0] - 2020-08-08
+- add support for multiple path with scan command
+- fix issue with building cython extension
+- fix issue with fat option
+- fix zero-devision error
 
 ## [1.3.0] - 2020-06-26
 - add new `scan` command to calculate deduplication ratio for directories

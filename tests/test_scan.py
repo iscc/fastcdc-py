@@ -30,6 +30,5 @@ def test_scan_custom_params():
 
 
 def test_small_avg_size():
-    result = r.invoke(cli, ["scan", "-s", "100",  ROOT_DIR])
+    result = r.invoke(cli, ["scan", "-s", "100", ROOT_DIR])
     assert result.exit_code == 0
-
