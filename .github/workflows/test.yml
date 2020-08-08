@@ -50,7 +50,7 @@ jobs:
 
     - name: Install dependencies
       shell: bash
-      run: poetry install --extras "cython hashes"
+      run: poetry install --extras hashes
 
     - name: Run pytest
       shell: bash
