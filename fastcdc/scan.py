@@ -35,7 +35,7 @@ from fastcdc.utils import DefaultHelp, iter_files, supported_hashes
     "-hf", "--hash-function", type=click.STRING, default="sha256", show_default=True
 )
 def scan(paths, recursive, size, min_size, max_size, hash_function):
-    """Scan files in directory and report duplication."""
+    """Scan files in directories and report duplication."""
     if min_size is None:
         min_size = size // 4
     if max_size is None:
