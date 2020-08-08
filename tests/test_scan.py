@@ -21,3 +21,9 @@ def test_scan_path():
 def test_scan_custom_params():
     result = r.invoke(cli, ["scan", "-r", "-s", "1024", "-hf", "xxh64", ROOT_DIR])
     assert result.exit_code == 0
+
+
+def test_small_avg_size():
+    result = r.invoke(cli, ["scan", "-s", "100",  ROOT_DIR])
+    assert result.exit_code == 0
+
