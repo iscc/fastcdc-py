@@ -21,12 +21,12 @@ Windows
 $ pip install fastcdc
 ```
 
-To enable the cython based C-Extension and/or add additional support hash algorithms
+To enable add additional support for the hash algorithms
 ([xxhash](https://github.com/Cyan4973/xxHash) and
 [blake3](https://github.com/BLAKE3-team/BLAKE3/)) use
 
 ```shell
-$ pip install fastcdc[cython,hashes]
+$ pip install fastcdc[hashes]
 ```
 
 ## Example Usage
