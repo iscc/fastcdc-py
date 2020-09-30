@@ -141,6 +141,10 @@ nlfiedler link below).
 
 ## Change Log
 
+## [1.4.1] - 2020-09-30
+- fix issue with fat option in cython version
+- updated dependencies
+
 ## [1.4.0] - 2020-08-08
 - add support for multiple path with scan command
 - fix issue with building cython extension
