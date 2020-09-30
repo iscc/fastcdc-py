@@ -115,10 +115,20 @@ def test_sekien_64k_chunks(chunk_func, benchmark):
 def test_chunk_generator_py_fat():
     with open(TEST_FILE, "rb") as stream:
         cg = chunk_generator_py(stream, 256, 1024, 8192, fat=True, hf=sha256)
-        assert len(list(cg)) == 97
+        results = [c for c in cg]
+        assert len(results) == 97
+        for c in results:
+            stream.seek(c.offset)
+            data = stream.read(c.length)
+            assert data == c.data
 
 
 def test_chunk_generator_cy_fat():
     with open(TEST_FILE, "rb") as stream:
         cg = chunk_generator_cy(stream, 256, 1024, 8192, fat=True, hf=sha256)
-        assert len(list(cg)) == 97
+        results = [c for c in cg]
+        assert len(results) == 97
+        for c in results:
+            stream.seek(c.offset)
+            data = stream.read(c.length)
+            assert data == c.data
