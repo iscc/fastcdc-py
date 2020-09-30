@@ -83,7 +83,7 @@ cdef uint32_t cdc_offset(
 cdef class Chunk:
     cdef readonly unsigned long long offset
     cdef readonly int length
-    cdef readonly char* data
+    cdef readonly bytes data
     cdef readonly str hash
 
     def __init__(self, offset, length, data, hash):
