@@ -1,0 +1,103 @@
+name: Build and upload to PyPI
+
+on: [push, pull_request]
+
+jobs:
+  build_wheels_linux:
+    name: Build wheels, manylinux
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Build wheels
+      uses: RalfG/python-wheels-manylinux-build@v0.3.2-manylinux2010_x86_64
+      with:
+        python-versions: 'cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39'
+        build-requirements: 'cython'
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.whl
+
+  build_wheels_macos_windows:
+    name: Build wheels, ${{ matrix.os }}, py ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [macos, windows]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        pip install poetry
+        poetry install --extras hashes
+
+    - name: build wheel
+      run: |
+        poetry build
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      name: Install Python
+      with:
+        python-version: '3.7'
+
+    - name: Install poetry
+      shell: bash
+      run: |
+        pip install poetry
+
+    - name: Build sdist
+      run: poetry build --format sdist
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.tar.gz
+
+  upload_pypi:
+    name: Upload to PyPI
+    needs:
+      - build_wheels_linux
+      - build_wheels_macos_windows
+      - build_sdist
+    runs-on: ubuntu-latest
+    # upload to PyPI on every tag starting with 'v'
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+    # alternatively, to publish when a GitHub Release is created, use the following rule:
+    # if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+          # To test: repository_url: https://test.pypi.org/legacy/
