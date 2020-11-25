@@ -28,10 +28,10 @@ jobs:
 
   build_wheels_macos_windows:
     name: Build wheels, ${{ matrix.os }}, py ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos, windows]
+        os: [macos-10.15, macos-11.0, windows-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
     - name: Checkout
