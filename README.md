@@ -141,6 +141,10 @@ nlfiedler link below).
 
 ## Change Log
 
+## [1.4.2] - 2020-11-25
+- add binary releases to PyPI (Xie Yanbo)
+- update dependencies
+
 ## [1.4.1] - 2020-09-30
 - fix issue with fat option in cython version
 - updated dependencies

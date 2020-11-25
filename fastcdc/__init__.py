@@ -9,4 +9,4 @@ except ImportError:
 
     click.secho("Running in pure python mode (slow)", fg="bright_magenta")
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
