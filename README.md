@@ -141,6 +141,9 @@ nlfiedler link below).
 
 ## Change Log
 
+## [1.4.3] - 2023-01-30
+- update dependencies to support Python 3.8.0
+
 ## [1.4.2] - 2020-11-25
 - add binary releases to PyPI (Xie Yanbo)
 - update dependencies
