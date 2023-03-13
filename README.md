@@ -11,7 +11,7 @@ defined chunking and its applications, see the reference material linked below.
 
 ## Requirements
 
-* [Python](https://www.python.org/) Version 3.6 and later. Tested on Linux, Mac and
+* [Python](https://www.python.org/) Version 3.7 and later. Tested on Linux, Mac and
 Windows
 
 ## Installing
@@ -140,6 +140,11 @@ nlfiedler link below).
     + Similar but slightly earlier algorithm by some of the same researchers.
 
 ## Change Log
+
+## [1.5.0] - Unreleased
+- added python 3.10/3.11 support
+- removed python 3.6 support
+- update dependencies
 
 ## [1.4.2] - 2020-11-25
 - add binary releases to PyPI (Xie Yanbo)
