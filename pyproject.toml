@@ -7,7 +7,6 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/iscc/fastcdc-py"
 keywords = ["cdc", "chunking"]
-build = "build.py"
 
 classifiers = [
     "Intended Audience :: Developers",
@@ -31,26 +30,29 @@ classifiers = [
 fastcdc = 'fastcdc.cli:cli'
 
 [tool.poetry.dependencies]
-python = "^3.6"
-click = "^7.1.2"
-humanize = "^2.4.0"
-codetiming = "^1.2.0"
-click-default-group = "^1.2.2"
-py-cpuinfo = "^6.0.0"
+python = ">=3.7.2,<4.0"
+click = "^8.1"
+humanize = "^4.0"
+codetiming = "^1.2"
+click-default-group = "^1.2"
+py-cpuinfo = "^9.0"
 
-xxhash = { version = "^1.4.4", optional = true }
-blake3 = { version = "^0.1.5", optional = true }
+xxhash = { version = "^3.0", optional = true }
+blake3 = { version = "^0.3", optional = true }
 
 [tool.poetry.extras]
 hashes = ["xxhash", "blake3"]
 
 [tool.poetry.dev-dependencies]
-pytest = "^5"
-black = "^19.10b0"
-jupyterlab = "^2.1.2"
-cython = "^0.29.17"
-pytest-benchmark = "^3.2.3"
+pytest = "*"
+black = "*"
+cython = "*"
+pytest-benchmark = "*"
+
+[tool.poetry.build]
+generate-setup-file = true
+script = "build.py"
 
 [build-system]
-requires = ["poetry>=1.0", "setuptools", "wheel", "cython"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0", "setuptools", "wheel", "cython"]
+build-backend = "poetry.core.masonry.api"
