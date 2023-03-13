@@ -28,12 +28,7 @@ To enable add additional support for the hash algorithms
 $ pip install fastcdc[hashes]
 ```
 
-## Example Usage
-
-An example can be found in the `examples` directory of the source repository,
-which demonstrates reading files of arbitrary size into a memory-mapped buffer
-and passing them through the chunker (and computing the SHA256 hash digest of
-each chunk).
+## Usage
 
 ### Calculate chunks with default settings:
 ```shell
