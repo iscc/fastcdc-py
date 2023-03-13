@@ -136,7 +136,7 @@ nlfiedler link below).
 
 ## Change Log
 
-## [1.5.0] - Unreleased
+## [1.5.0] - 2023-03-13
 - added python 3.10/3.11 support
 - removed python 3.6 support
 - update dependencies
