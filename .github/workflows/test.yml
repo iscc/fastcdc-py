@@ -25,11 +25,3 @@ jobs:
 
       - name: Run Tests
         run: poetry run pytest -q tests
-
-      - name: Build Wheel
-        run: poetry build -f wheel
-
-      - name: Collect Wheel
-        uses: actions/upload-artifact@v3
-        with:
-          path: dist/*.whl
