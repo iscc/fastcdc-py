@@ -1,9 +1,62 @@
 # -*- coding: utf-8 -*-
-from io import BytesIO
+from io import BytesIO, IOBase
 from math import log2
+from typing import IO, Union, Callable, Generator
 
 
-def fastcdc_py(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=None):
+class Chunk:
+    def __init__(self, offset: int, length: int, data: bytes, hash: str):
+        self.offset = offset
+        self.length = length
+        self.data = data
+        self.hash = hash
+
+    def __str__(self):
+        return "hash={} offset={} size={}".format(self.hash, self.offset, self.length)
+
+
+def fastcdc_py(
+    data: Union[str, bytes, IO],
+    min_size: Union[int, None] = None,
+    avg_size: int = 8192,
+    max_size: Union[int, None] = None,
+    fat: bool = False,
+    hf: Union[Callable, None] = None
+) -> Generator[Chunk, None, None]:
+    """Generates chunks from the given data using FastCDC algorithm.
+
+    Args:
+        data (Union[str, bytes, IO]): The data to generate chunks from.
+            It can be a file path (str), bytes, or a readable IO object.
+
+        min_size (int, optional): The minimum chunk size in bytes.
+            It should be in range between 64 and 67_108_864.
+            If None, it is set to a quarter of the average size.
+            Defaults to None.
+
+        avg_size (int): The average chunk size in bytes.
+            It should be in range between 256 and 268_435_456.
+            Defaults to 8192.
+
+        max_size (int, optional): The maximum chunk size in bytes.
+            It should be in range between 1024 and 1_073_741_824.
+            If None, it is set to 8 times the average size.
+            Defaults to None.
+
+        fat (bool, optional): Flag indicating whether to include raw
+            chank data for chunk output. Defaults to False.
+
+        hf (Callable, optional): The hash function to use for chunking.
+            If None, hash straing in chank output will be empty.
+            Defaults to None.
+
+    Returns:
+        Generator[Chunk, None, None]: A generator that yields Chunk class instances.
+
+    Raises:
+        TypeError: If the type of the data argument is not 'str', 'bytes', or 'IOBase'.
+        FileNotFoundError: If no file exists with the name provided as the input data.
+    """
     if min_size is None:
         min_size = avg_size // 4
     if max_size is None:
@@ -14,24 +67,58 @@ def fastcdc_py(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=
     assert MAXIMUM_MIN <= max_size <= MAXIMUM_MAX
 
     # Ensure we have a readable stream
+    stream: IO
     if isinstance(data, str):
         stream = open(data, "rb")
     elif not hasattr(data, "read"):
         stream = BytesIO(data)
-    else:
+    elif isinstance(data, IOBase): # hack for mypy
         stream = data
+    else:
+        raise TypeError("type of data argument should be 'int', 'bytes' or 'IOBase'")
     return chunk_generator(stream, min_size, avg_size, max_size, fat, hf)
 
 
-def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
-    cs = center_size(avg_size, min_size, max_size)
-    bits = logarithm2(avg_size)
-    mask_s = mask(bits + 1)
-    mask_l = mask(bits - 1)
+def chunk_generator(
+    stream: IO,
+    min_size: int,
+    avg_size: int,
+    max_size: int,
+    fat: bool = False,
+    hf: Union[Callable, None] = None
+) -> Generator[Chunk, None, None]:
+    """Generates chunks from a given stream using FastCDC algorithm.
 
-    read_size = max(1024 * 64, max_size)
+    Args:
+        stream (IO): The input stream to generate chunks from.
+
+        min_size (int): The minimum chunk size in bytes.
+            It should be in range between 64 and 67_108_864.
+
+        avg_size (int): The average chunk size in bytes.
+            It should be in range between 256 and 268_435_456.
+
+        max_size (int): The maximum chunk size in bytes.
+            It should be in range between 1024 and 1_073_741_824.
+
+        fat (bool, optional): Flag indicating whether to include raw
+            chank data for chunk output. Defaults to False.
+
+        hf (Callable, optional): The hash function to use for chunking.
+            If None, hash straing in chank output will be empty.
+            Defaults to None.
+
+    Yields:
+        Chunk: A chunk object with offset, length, raw data, and hash (if applicable).
+    """
+    cs: int = center_size(avg_size, min_size, max_size)
+    bits: int = logarithm2(avg_size)
+    mask_s: int = mask(bits + 1)
+    mask_l: int = mask(bits - 1)
+
+    read_size: int = max(1024 * 64, max_size)
     blob = memoryview(stream.read(read_size))
-    offset = 0
+    offset: int = 0
     while blob:
         if len(blob) <= max_size:
             blob = memoryview(bytes(blob) + stream.read(read_size))
@@ -43,7 +130,35 @@ def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
         blob = blob[cp:]
 
 
-def cdc_offset(data, mi, av, ma, cs, mask_s, mask_l):
+def cdc_offset(
+    data: bytes,
+    mi: int,
+    av: int,
+    ma: int,
+    cs: int,
+    mask_s: int,
+    mask_l: int
+) -> int:
+    """Calculates the offset for FastCDC chunking.
+
+    Args:
+        data (bytes): The data to calculate the offset from.
+
+        mi (int): The minimum chunk size in bytes.
+
+        av (int): The average chunk size in bytes.
+
+        ma (int): The maximum chunk size in bytes.
+
+        cs (int): The center size.
+
+        mask_s (int): The mask for the small pattern check.
+
+        mask_l (int): The mask for the large pattern check.
+
+    Returns:
+        int: The calculated offset.
+    """
     pattern = 0
     i = mi
     size = len(data)
@@ -67,36 +182,59 @@ def cdc_offset(data, mi, av, ma, cs, mask_s, mask_l):
 ########################################################################################
 
 
-class Chunk:
-    def __init__(self, offset, length, data, hash):
-        self.offset = offset
-        self.length = length
-        self.data = data
-        self.hash = hash
+def logarithm2(value: Union[int, float]) -> int:
+    """Calculates the logarithm base 2 of a given value.
 
-    def __str__(self):
-        return "hash={} offset={} size={}".format(self.hash, self.offset, self.length)
+    Args:
+        value (Union[int, float]): The value to calculate the logarithm of.
 
-
-def logarithm2(value):
+    Returns:
+        int: The logarithm base 2 of the given value.
+    """
     return round(log2(value))
 
 
-def ceil_div(x, y):
-    return (x + y - 1) // y
+def ceil_div(x: Union[int, float], y: Union[int, float]) -> int:
+    """Divides two values and rounds the result up to the nearest integer.
+
+    Args:
+        x (Union[int, float]): The numerator value.
+
+        y (Union[int, float]): The denominator value.
+
+    Returns:
+        int: The result of the division, rounded up to the nearest integer.
+    """
+    return int((x + y - 1) // y)
 
 
-def center_size(average, minimum, source_size):
+def center_size(
+    average: Union[int, float],
+    minimum: Union[int, float],
+    source_size: Union[int, float]
+) -> int:
+    """Calculates the center size based on the average, minimum, and source size.
+
+    Args:
+        average (Union[int, float]): The average size.
+
+        minimum (Union[int, float]): The minimum size.
+
+        source_size (Union[int, float]): The size of the source.
+
+    Returns:
+        int: The calculated center size.
+    """
     offset = minimum + ceil_div(minimum, 2)
     if offset > average:
         offset = average
     size = average - offset
     if size > source_size:
-        return source_size
-    return size
+        return int(source_size)
+    return int(size)
 
 
-def mask(bits):
+def mask(bits: int) -> int:
     return 2 ** bits - 1
 
 
