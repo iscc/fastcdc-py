@@ -75,7 +75,7 @@ def fastcdc_py(
     elif isinstance(data, IOBase): # hack for mypy
         stream = data
     else:
-        raise TypeError("type of data argument should be 'int', 'bytes' or 'IOBase'")
+        raise TypeError("type of data argument should be 'str', 'bytes' or 'IOBase'")
     return chunk_generator(stream, min_size, avg_size, max_size, fat, hf)
 
 
