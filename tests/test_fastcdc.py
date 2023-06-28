@@ -1,7 +1,7 @@
 from hashlib import sha256
 
 import pytest
-from fastcdc.original import *
+from fastcdc.original import FastCDC
 from fastcdc.fastcdc_py import fastcdc_py, chunk_generator as chunk_generator_py
 from fastcdc.fastcdc_cy import fastcdc_cy, chunk_generator as chunk_generator_cy
 from tests import TEST_FILE
