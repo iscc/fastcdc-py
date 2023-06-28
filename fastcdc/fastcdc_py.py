@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from io import BytesIO, IOBase
 from math import log2
-from typing import IO, Union, Callable, Generator
+from typing import IO, Union, Callable, Generator, Optional
 
 
 class Chunk:
@@ -17,11 +17,11 @@ class Chunk:
 
 def fastcdc_py(
     data: Union[str, bytes, IO],
-    min_size: Union[int, None] = None,
+    min_size: Optional[int] = None,
     avg_size: int = 8192,
-    max_size: Union[int, None] = None,
+    max_size: Optional[int] = None,
     fat: bool = False,
-    hf: Union[Callable, None] = None
+    hf: Optional[Callable] = None
 ) -> Generator[Chunk, None, None]:
     """Generates chunks from the given data using FastCDC algorithm.
 
@@ -85,7 +85,7 @@ def chunk_generator(
     avg_size: int,
     max_size: int,
     fat: bool = False,
-    hf: Union[Callable, None] = None
+    hf: Optional[Callable] = None
 ) -> Generator[Chunk, None, None]:
     """Generates chunks from a given stream using FastCDC algorithm.
 
