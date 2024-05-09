@@ -136,7 +136,7 @@ nlfiedler link below).
 
 ## Change Log
 
-## [1.6.0] - Unreleased
+## [1.6.0] - 2024-05-09
 - added python 3.12 support
 - removed python 3.7 support
 - updated dependencies
