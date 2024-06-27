@@ -1,11 +1,25 @@
 # -*- coding: utf-8 -*-
+from typing import Callable, Iterator
+
 cimport cython
 from libc.stdint cimport uint32_t, uint8_t
 from libc.math cimport log2, lround
-from fastcdc.utils import get_memoryview
+from fastcdc.utils import get_memoryview, Data
 
 
 def fastcdc_cy(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=None):
+    # type: (Data, int|None, int, int|None, bool, Callable|None) -> Iterator["Chunk"]
+    """
+    Perform Fast Content-Defined Chunking (FastCDC) on input data.
+
+    :param data: Input data to be chunked
+    :param min_size: Minimum chunk size (default: avg_size // 4)
+    :param avg_size: Average chunk size (default: 8192)
+    :param max_size: Maximum chunk size (default: avg_size * 8)
+    :param fat: If True, include chunk offset and size in output
+    :param hf: Hash function to use for chunking (default: None)
+    :return: Generator yielding Chunk objects
+    """
     if min_size is None:
         min_size = avg_size // 4
     if max_size is None:
@@ -21,16 +35,28 @@ def fastcdc_cy(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
+def chunk_generator(memview, min_size, avg_size, max_size, fat, hf):
+    # type: (memoryview, int, int, int, bool, Callable) -> Iterator[Chunk]
+    """
+    Generate chunks from memoryview data using FastCDC algorithm.
+
+    :param memview: Input data as a memoryview
+    :param min_size: Minimum chunk size
+    :param avg_size: Average chunk size
+    :param max_size: Maximum chunk size
+    :param fat: If True, include chunk data in output
+    :param hf: Hash function to use for chunking
+    :return: Generator yielding Chunk objects
+    """
     cs = center_size(avg_size, min_size, max_size)
     bits = logarithm2(avg_size)
     mask_s = mask(bits + 1)
     mask_l = mask(bits - 1)
     read_size = max(1024 * 64, max_size)
     offset = 0
-    while offset < len(stream):
-        blob = stream[offset:offset + read_size]
-        cp = cdc_offset(blob, min_size, avg_size, max_size, cs, mask_s, mask_l)
+    while offset < len(memview):
+        blob = memview[offset:offset + read_size]
+        cp = cdc_offset(blob, min_size, max_size, cs, mask_s, mask_l)
         raw = bytes(blob[:cp]) if fat else b''
         h = hf(blob[:cp]).hexdigest() if hf else ''
         yield Chunk(offset, cp, raw, h)
@@ -42,7 +68,6 @@ def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
 cdef uint32_t cdc_offset(
     const uint8_t[:] data,
     uint32_t mi,
-    uint32_t av,
     uint32_t ma,
     uint32_t cs,
     uint32_t mask_s,

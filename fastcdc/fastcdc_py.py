@@ -31,7 +31,7 @@ def fastcdc_py(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=
 
 
 def chunk_generator(memview, min_size, avg_size, max_size, fat, hf):
-    # type: (memoryview, int, int, int, bool, Callable|None) -> Iterator[Chunk]
+    # type: (memoryview, int, int, int, bool, Callable) -> Iterator[Chunk]
     """
     Generate chunks from memoryview data using FastCDC algorithm.
 
