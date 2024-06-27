@@ -5,6 +5,7 @@ from fastcdc.original import *
 from fastcdc.fastcdc_py import fastcdc_py, chunk_generator as chunk_generator_py
 from fastcdc.fastcdc_cy import fastcdc_cy, chunk_generator as chunk_generator_cy
 from tests import TEST_FILE
+from fastcdc.utils import get_memoryview
 
 
 @pytest.mark.parametrize("chunk_func", [FastCDC.new, fastcdc_py, fastcdc_cy])
@@ -125,7 +126,8 @@ def test_chunk_generator_py_fat():
 
 def test_chunk_generator_cy_fat():
     with open(TEST_FILE, "rb") as stream:
-        cg = chunk_generator_cy(stream, 256, 1024, 8192, fat=True, hf=sha256)
+        mview = get_memoryview(stream)
+        cg = chunk_generator_cy(mview, 256, 1024, 8192, fat=True, hf=sha256)
         results = [c for c in cg]
         assert len(results) == 97
         for c in results:

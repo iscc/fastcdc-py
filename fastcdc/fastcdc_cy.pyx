@@ -2,7 +2,7 @@
 cimport cython
 from libc.stdint cimport uint32_t, uint8_t
 from libc.math cimport log2, lround
-from io import BytesIO
+from fastcdc.utils import get_memoryview
 
 
 def fastcdc_cy(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=None):
@@ -15,14 +15,9 @@ def fastcdc_cy(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=
     assert AVERAGE_MIN <= avg_size <= AVERAGE_MAX
     assert MAXIMUM_MIN <= max_size <= MAXIMUM_MAX
 
-    # Ensure we have a readable stream
-    if isinstance(data, str):
-        stream = open(data, "rb")
-    elif not hasattr(data, "read"):
-        stream = BytesIO(data)
-    else:
-        stream = data
-    return chunk_generator(stream, min_size, avg_size, max_size, fat, hf)
+    mview = get_memoryview(data)
+    return chunk_generator(mview, min_size, avg_size, max_size, fat, hf)
+
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -32,11 +27,9 @@ def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
     mask_s = mask(bits + 1)
     mask_l = mask(bits - 1)
     read_size = max(1024 * 64, max_size)
-    blob = memoryview(stream.read(read_size))
     offset = 0
-    while blob:
-        if len(blob) <= max_size:
-            blob  = memoryview(bytes(blob) + stream.read(read_size))
+    while offset < len(stream):
+        blob = stream[offset:offset + read_size]
         cp = cdc_offset(blob, min_size, avg_size, max_size, cs, mask_s, mask_l)
         raw = bytes(blob[:cp]) if fat else b''
         h = hf(blob[:cp]).hexdigest() if hf else ''

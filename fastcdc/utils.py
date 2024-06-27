@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import math
+import mmap
+from io import BufferedReader
 from os import scandir
+from pathlib import Path
 from typing import List
 import hashlib
 import click
@@ -79,3 +82,27 @@ def iter_files(path, recursive=False):
                     yield entry
     except PermissionError:
         click.echo("\nPermissionError for {}".format(path))
+
+
+def get_memoryview(data):
+    # Handle file path string and Path object
+    if isinstance(data, (str, Path)):
+        with open(data, 'rb') as f:
+            mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+            return memoryview(mm)
+
+    # Handle file object opened in 'rb' mode
+    if hasattr(data, 'fileno'):
+        mm = mmap.mmap(data.fileno(), 0, access=mmap.ACCESS_READ)
+        return memoryview(mm)
+
+    # Handle BufferedReader
+    if isinstance(data, BufferedReader):
+        mm = mmap.mmap(data.raw.fileno(), 0, access=mmap.ACCESS_READ)
+        return memoryview(mm)
+
+    # Handle bytes, bytearray, mmap.mmap, and memoryview objects
+    if isinstance(data, (bytes, bytearray, mmap.mmap, memoryview)):
+        return memoryview(data)
+
+    raise TypeError("Unsupported data type")
