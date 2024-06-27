@@ -115,7 +115,8 @@ def test_sekien_64k_chunks(chunk_func, benchmark):
 
 def test_chunk_generator_py_fat():
     with open(TEST_FILE, "rb") as stream:
-        cg = chunk_generator_py(stream, 256, 1024, 8192, fat=True, hf=sha256)
+        mview = get_memoryview(stream)
+        cg = chunk_generator_py(mview, 256, 1024, 8192, fat=True, hf=sha256)
         results = [c for c in cg]
         assert len(results) == 97
         for c in results:
