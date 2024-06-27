@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
-from fastcdc.utils import get_memoryview
+from typing import Callable, Iterator
+from fastcdc.utils import get_memoryview, Data
 from math import log2
 
 
 def fastcdc_py(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=None):
+    # type: (Data, int|None, int, int|None, bool, Callable|None) -> Iterator["Chunk"]
+    """
+    Perform Fast Content-Defined Chunking (FastCDC) on input data.
+
+    :param data: Input data to be chunked
+    :param min_size: Minimum chunk size (default: avg_size // 4)
+    :param avg_size: Average chunk size (default: 8192)
+    :param max_size: Maximum chunk size (default: avg_size * 8)
+    :param fat: If True, include chunk offset and size in output
+    :param hf: Hash function to use for chunking (default: None)
+    :return: Generator yielding Chunk objects
+    """
     if min_size is None:
         min_size = avg_size // 4
     if max_size is None:

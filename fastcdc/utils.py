@@ -7,6 +7,10 @@ from pathlib import Path
 from typing import List
 import hashlib
 import click
+from typing import Union
+
+
+Data = Union[str, Path, BufferedReader, bytes, bytearray, mmap.mmap, memoryview]
 
 
 def center_size(average: int, minimum: int, source_size: int) -> int:
