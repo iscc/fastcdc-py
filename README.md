@@ -136,7 +136,7 @@ nlfiedler link below).
 
 ## Change Log
 
-## [1.7.0] - Unreleased
+## [1.7.0] - 2024-06-27
 - Performance improvement [@dw](https://github.com/dw)
 - Fixed issue with inputs smaller than min_size [@grote](https://github.com/grote)
 
