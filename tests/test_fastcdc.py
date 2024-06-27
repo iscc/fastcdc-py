@@ -132,3 +132,18 @@ def test_chunk_generator_cy_fat():
             stream.seek(c.offset)
             data = stream.read(c.length)
             assert data == c.data
+
+
+@pytest.mark.parametrize("chunk_func", [fastcdc_py, fastcdc_cy])
+def test_chunk_length_less_than_min_size(chunk_func):
+    data = os.urandom(20)
+    chunks = chunk_func(
+        data,
+        min_size=1024,  # 1 kb
+        avg_size=4 * 1024,  # 4 kb
+        max_size=16 * 1024,  # 16 kb
+        fat=True,
+        hf=sha256,
+    )
+    chunk = next(chunks)
+    assert chunk.length == len(data)
