@@ -30,23 +30,47 @@ def fastcdc_py(data, min_size=None, avg_size=8192, max_size=None, fat=False, hf=
     return chunk_generator(mview, min_size, avg_size, max_size, fat, hf)
 
 
-def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
+def chunk_generator(memview, min_size, avg_size, max_size, fat, hf):
+    # type: (memoryview, int, int, int, bool, Callable|None) -> Iterator[Chunk]
+    """
+    Generate chunks from memoryview data using FastCDC algorithm.
+
+    :param memview: Input data as a memoryview
+    :param min_size: Minimum chunk size
+    :param avg_size: Average chunk size
+    :param max_size: Maximum chunk size
+    :param fat: If True, include chunk data in output
+    :param hf: Hash function to use for chunking
+    :return: Generator yielding Chunk objects
+    """
     cs = center_size(avg_size, min_size, max_size)
     bits = logarithm2(avg_size)
     mask_s = mask(bits + 1)
     mask_l = mask(bits - 1)
     read_size = max(1024 * 64, max_size)
     offset = 0
-    while offset < len(stream):
-        blob = stream[offset : offset + read_size]
-        cp = cdc_offset(blob, min_size, avg_size, max_size, cs, mask_s, mask_l)
+    while offset < len(memview):
+        blob = memview[offset : offset + read_size]
+        cp = cdc_offset(blob, min_size, max_size, cs, mask_s, mask_l)
         raw = bytes(blob[:cp]) if fat else b""
         h = hf(blob[:cp]).hexdigest() if hf else ""
         yield Chunk(offset, cp, raw, h)
         offset += cp
 
 
-def cdc_offset(data, mi, av, ma, cs, mask_s, mask_l):
+def cdc_offset(data, mi, ma, cs, mask_s, mask_l):
+    # type: (memoryview, int, int, int, int, int) -> int
+    """
+    Calculate content-defined chunking offset using FastCDC algorithm.
+
+    :param data: Input data as memoryview
+    :param mi: Minimum chunk size
+    :param ma: Maximum chunk size
+    :param cs: Center size for normalization
+    :param mask_s: Mask for small chunks
+    :param mask_l: Mask for large chunks
+    :return: Calculated chunk offset
+    """
     pattern = 0
     size = len(data)
     i = min(mi, size)
