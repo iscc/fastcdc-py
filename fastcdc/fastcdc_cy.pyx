@@ -58,8 +58,8 @@ cdef uint32_t cdc_offset(
 ):
     cdef uint32_t pattern, i, size, barrier
     pattern = 0
-    i = mi
     size = len(data)
+    i = min(mi, size)
     barrier = min(cs, size)
     while i < barrier:
         pattern = (pattern >> 1) + GEAR[data[i]]
