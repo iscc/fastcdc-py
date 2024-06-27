@@ -35,7 +35,6 @@ def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
         h = hf(blob[:cp]).hexdigest() if hf else ''
         yield Chunk(offset, cp, raw, h)
         offset += cp
-        blob = blob[cp:]
 
 
 @cython.boundscheck(False)
