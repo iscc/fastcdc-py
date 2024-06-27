@@ -31,7 +31,7 @@ def logarithm2(value: int) -> int:
 def mask(bits: int) -> int:
     assert bits >= 1
     assert bits <= 31
-    return 2 ** bits - 1
+    return 2**bits - 1
 
 
 class DefaultHelp(click.Command):
@@ -87,12 +87,12 @@ def iter_files(path, recursive=False):
 def get_memoryview(data):
     # Handle file path string and Path object
     if isinstance(data, (str, Path)):
-        with open(data, 'rb') as f:
+        with open(data, "rb") as f:
             mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
             return memoryview(mm)
 
     # Handle file object opened in 'rb' mode
-    if hasattr(data, 'fileno'):
+    if hasattr(data, "fileno"):
         mm = mmap.mmap(data.fileno(), 0, access=mmap.ACCESS_READ)
         return memoryview(mm)
 

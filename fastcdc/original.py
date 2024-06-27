@@ -2,6 +2,7 @@
 """
 True to the original port of https://github.com/nlfiedler/fastcdc-rs
 """
+
 import os
 from dataclasses import dataclass
 from mmap import mmap, ACCESS_READ
@@ -26,7 +27,6 @@ class Chunk:
 
 @dataclass
 class FastCDC:
-
     source: Union[ByteString, BinaryIO, Text]
     bytes_processed: int
     bytes_remaining: int

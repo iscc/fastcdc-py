@@ -110,7 +110,7 @@ The explanation below is copied from
 codebase is little more than a translation of that implementation:
 
 > The following optimizations and variations on FastCDC are involved in the chunking algorithm:
-> * 31 bit integers to avoid 64 bit integers for the sake of the Javascript reference implementation.
+> * 31 bit integers to avoid 64-bit integers for the sake of the Javascript reference implementation.
 > * A right shift instead of a left shift to remove the need for an additional modulus operator, which would otherwise have been necessary to prevent overflow.
 > * Masks are no longer zero-padded since a right shift is used instead of a left shift.
 > * A more adaptive threshold based on a combination of average and minimum chunk size (rather than just average chunk size) to decide the pivot point at which to switch masks. A larger minimum chunk size now switches from the strict mask to the eager mask earlier.

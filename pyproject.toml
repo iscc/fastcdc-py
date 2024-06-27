@@ -43,11 +43,23 @@ blake3 = { version = "^0.3", optional = true }
 [tool.poetry.extras]
 hashes = ["xxhash", "blake3"]
 
-[tool.poetry.dev-dependencies]
-pytest = "*"
-black = "*"
+[tool.poetry.group.dev.dependencies]
 cython = "*"
+pytest = "*"
 pytest-benchmark = "*"
+poethepoet = "*"
+ruff = "*"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.poe.tasks]
+format-code = { cmd = "poetry run ruff format", help = "Code style formating with ruff" }
+test = { cmd = "poetry run pytest", help = "Run tests" }
+all = ["format-code", "test"]
 
 [tool.poetry.build]
 generate-setup-file = true

@@ -25,10 +25,10 @@ def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
     read_size = max(1024 * 64, max_size)
     offset = 0
     while offset < len(stream):
-        blob = stream[offset:offset + read_size]
+        blob = stream[offset : offset + read_size]
         cp = cdc_offset(blob, min_size, avg_size, max_size, cs, mask_s, mask_l)
-        raw = bytes(blob[:cp]) if fat else b''
-        h = hf(blob[:cp]).hexdigest() if hf else ''
+        raw = bytes(blob[:cp]) if fat else b""
+        h = hf(blob[:cp]).hexdigest() if hf else ""
         yield Chunk(offset, cp, raw, h)
         offset += cp
 
@@ -87,7 +87,7 @@ def center_size(average, minimum, source_size):
 
 
 def mask(bits):
-    return 2 ** bits - 1
+    return 2**bits - 1
 
 
 ########################################################################################
