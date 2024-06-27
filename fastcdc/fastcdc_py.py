@@ -45,8 +45,8 @@ def chunk_generator(stream, min_size, avg_size, max_size, fat, hf):
 
 def cdc_offset(data, mi, av, ma, cs, mask_s, mask_l):
     pattern = 0
-    i = mi
     size = len(data)
+    i = min(mi, size)
     barrier = min(cs, size)
     while i < barrier:
         pattern = (pattern >> 1) + GEAR[data[i]]
